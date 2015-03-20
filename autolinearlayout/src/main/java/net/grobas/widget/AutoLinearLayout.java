@@ -116,7 +116,7 @@ public class AutoLinearLayout extends FrameLayout {
                 //if there is not enough space jump to another column
                 if (childTop + childHeight + lp.topMargin + lp.bottomMargin > height + getPaddingTop()) {
                     //before change column update positions if the gravity is present
-                    gravityVertical(height, totalVertical, column, maxChildWidth);
+                    updateChildPositionVertical(height, totalVertical, column, maxChildWidth);
                     childTop = getPaddingTop();
                     childLeft += maxChildWidth;
                     maxChildWidth = 0;
@@ -137,10 +137,10 @@ public class AutoLinearLayout extends FrameLayout {
         }
 
         //update positions for last column
-        gravityVertical(height, totalVertical, column, maxChildWidth);
+        updateChildPositionVertical(height, totalVertical, column, maxChildWidth);
         totalHorizontal += childLeft + maxChildWidth;
         //final update for horizontal gravities and layout views
-        gravityHorizontal(width, totalHorizontal, column, 0);
+        updateChildPositionHorizontal(width, totalHorizontal, column, 0);
         mListPositions.clear();
     }
 
@@ -181,7 +181,7 @@ public class AutoLinearLayout extends FrameLayout {
                 final int childHeight = child.getMeasuredHeight();
 
                 if (childLeft + childWidth + lp.leftMargin + lp.rightMargin > width + getPaddingLeft()) {
-                    gravityHorizontal(width, totalHorizontal, row, maxChildHeight);
+                    updateChildPositionHorizontal(width, totalHorizontal, row, maxChildHeight);
                     childLeft = getPaddingLeft();
                     childTop += maxChildHeight;
                     maxChildHeight = 0;
@@ -201,9 +201,9 @@ public class AutoLinearLayout extends FrameLayout {
             }
         }
 
-        gravityHorizontal(width, totalHorizontal, row, maxChildHeight);
+        updateChildPositionHorizontal(width, totalHorizontal, row, maxChildHeight);
         totalVertical += childTop + maxChildHeight;
-        gravityVertical(height, totalVertical, row, 0);
+        updateChildPositionVertical(height, totalVertical, row, 0);
         mListPositions.clear();
     }
 
@@ -216,39 +216,21 @@ public class AutoLinearLayout extends FrameLayout {
      * @param column column number
      * @param maxChildWidth the biggest child width
      */
-    private void gravityVertical(int height, int totalSize, int column, int maxChildWidth) {
+    private void updateChildPositionVertical(int height, int totalSize, int column, int maxChildWidth) {
         for(int i = 0; i < mListPositions.size(); i++) {
             ViewPosition pos = mListPositions.get(i);
             final View child = getChildAt(i);
             //(android:gravity)
             //update children position inside parent layout
             if(mOrientation == HORIZONTAL || pos.position == column) {
-                int size = height - totalSize;
-                switch (mGravity & Gravity.VERTICAL_GRAVITY_MASK) {
-                    case Gravity.BOTTOM:
-                        pos.top += (size > 0) ? size : 0;
-                        break;
-
-                    case Gravity.CENTER_VERTICAL:
-                        pos.top += ((size > 0) ? size : 0) / 2;
-                        break;
-                }
+                updateTopPositionByGravity(pos, height - totalSize, mGravity);
             }
             //(android:layout_gravity)
             //update children position inside their space
             if(mOrientation == VERTICAL && pos.position == column) {
                 LayoutParams lp = (LayoutParams) child.getLayoutParams();
-                int gravity = lp.gravity;
                 int size = maxChildWidth - child.getMeasuredWidth() - lp.leftMargin - lp.rightMargin;
-                switch (gravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
-                    case Gravity.RIGHT:
-                        pos.left += (size > 0) ? size : 0;
-                        break;
-
-                    case Gravity.CENTER_HORIZONTAL:
-                        pos.left += ((size > 0) ? size : 0) / 2;
-                        break;
-                }
+                updateLeftPositionByGravity(pos, size, lp.gravity);
             }
             //update children into layout parent
             if(mOrientation == HORIZONTAL)
@@ -265,41 +247,47 @@ public class AutoLinearLayout extends FrameLayout {
      * @param row row number
      * @param maxChildHeight the biggest child height
      */
-    private void gravityHorizontal(int width, int totalSize, int row, int maxChildHeight) {
+    private void updateChildPositionHorizontal(int width, int totalSize, int row, int maxChildHeight) {
         for(int i = 0; i < mListPositions.size(); i++) {
             ViewPosition pos = mListPositions.get(i);
             final View child = getChildAt(i);
 
             if(mOrientation == VERTICAL || pos.position == row) {
-                int size = width - totalSize;
-                switch(mGravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
-                    case Gravity.RIGHT:
-                        pos.left += (size > 0) ? size : 0;
-                        break;
-
-                    case Gravity.CENTER_HORIZONTAL:
-                        pos.left += ((size > 0) ? size : 0) / 2;
-                        break;
-                }
+                updateLeftPositionByGravity(pos, width - totalSize, mGravity);
             }
 
             if(mOrientation == HORIZONTAL && pos.position == row) {
                 LayoutParams lp = (LayoutParams) child.getLayoutParams();
-                int gravity = lp.gravity;
                 int size = maxChildHeight - child.getMeasuredHeight() - lp.topMargin - lp.bottomMargin;
-                switch (gravity & Gravity.VERTICAL_GRAVITY_MASK) {
-                    case Gravity.BOTTOM:
-                        pos.top += (size > 0) ? size : 0;
-                        break;
-
-                    case Gravity.CENTER_VERTICAL:
-                        pos.top += ((size > 0) ? size : 0) / 2;
-                        break;
-                }
+                updateTopPositionByGravity(pos, size, lp.gravity);
             }
 
             if(mOrientation == VERTICAL)
                 layout(child, pos);
+        }
+    }
+
+    private void updateLeftPositionByGravity(ViewPosition pos, int size, int gravity) {
+        switch(gravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
+            case Gravity.RIGHT:
+                pos.left += (size > 0) ? size : 0;
+                break;
+
+            case Gravity.CENTER_HORIZONTAL:
+                pos.left += ((size > 0) ? size : 0) / 2;
+                break;
+        }
+    }
+
+    private void updateTopPositionByGravity(ViewPosition pos, int size, int gravity) {
+        switch (gravity & Gravity.VERTICAL_GRAVITY_MASK) {
+            case Gravity.BOTTOM:
+                pos.top += (size > 0) ? size : 0;
+                break;
+
+            case Gravity.CENTER_VERTICAL:
+                pos.top += ((size > 0) ? size : 0) / 2;
+                break;
         }
     }
 
@@ -380,8 +368,7 @@ public class AutoLinearLayout extends FrameLayout {
     static class ViewPosition {
         int left;
         int top;
-        //row or column
-        int position;
+        int position; //row or column
 
         ViewPosition(int l, int t, int r) {
             this.left = l;

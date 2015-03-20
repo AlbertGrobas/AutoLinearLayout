@@ -6,6 +6,7 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import net.grobas.widget.AutoLinearLayout;
 
@@ -16,11 +17,11 @@ public class SampleActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
-
+        LinearLayout a;
         AutoLinearLayout l = (AutoLinearLayout) findViewById(R.id.layout);
         AutoLinearLayout l2 = new AutoLinearLayout(this);
-        l2.setOrientation(AutoLinearLayout.VERTICAL);
-        l2.setGravity(Gravity.CENTER);
+        //l2.setOrientation(AutoLinearLayout.VERTICAL);
+        l2.setGravity(Gravity.CENTER_HORIZONTAL);
 
         for(int i = 0; i < 24; i++) {
             Button b = new Button(this);
