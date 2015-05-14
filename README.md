@@ -19,16 +19,16 @@ To use AutoLinearLayout, add the module into your project and start to build xml
     <net.grobas.widget.AutoLinearLayout 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:gravity="center"
-        app:orientation="vertical">
+        app:auto_gravity="center"
+        app:auto_orientation="vertical">
         <!-- other views -->
     </net.grobas.widget.AutoLinearLayout>
 ```
 
 #####Properties:
 
-* `app:orientation` (int)    -> default horizontal
-* `app:gravity`  (flag)      -> default top | left
+* `app:auto_orientation` (int)    -> default horizontal
+* `app:auto_gravity`  (flag)      -> default top | left
 
 
 ###JAVA
@@ -40,6 +40,11 @@ To use AutoLinearLayout, add the module into your project and start to build xml
     //add other views
     parent.addView(l2);
 ```
+
+##TODO
+
+* Rtl
+* Dividers?
 
 License
 -------

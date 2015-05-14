@@ -16,7 +16,6 @@
 
 package net.grobas.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.view.GravityCompat;
@@ -39,7 +38,7 @@ public class AutoLinearLayout extends FrameLayout {
     public final static int HORIZONTAL = 0;
     public final static int VERTICAL = 1;
 
-    private ArrayList<ViewPosition> mListPositions = new ArrayList<ViewPosition>();
+    private ArrayList<ViewPosition> mListPositions = new ArrayList<>();
 
     public AutoLinearLayout(Context context) {
         super(context);
@@ -51,7 +50,6 @@ public class AutoLinearLayout extends FrameLayout {
         init(context, attrs, 0);
     }
 
-    @SuppressLint("NewApi")
     public AutoLinearLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context, attrs, defStyle);
@@ -60,8 +58,8 @@ public class AutoLinearLayout extends FrameLayout {
     private void init(Context context, AttributeSet attrs, int defStyle) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AutoLinearLayout, defStyle, 0);
         try {
-            mOrientation = a.getInt(R.styleable.AutoLinearLayout_orientation, HORIZONTAL);
-            int gravity = a.getInt(R.styleable.AutoLinearLayout_gravity, -1);
+            mOrientation = a.getInt(R.styleable.AutoLinearLayout_auto_orientation, HORIZONTAL);
+            int gravity = a.getInt(R.styleable.AutoLinearLayout_auto_gravity, -1);
             if (gravity >= 0) {
                 setGravity(gravity);
             }
@@ -71,7 +69,112 @@ public class AutoLinearLayout extends FrameLayout {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (mOrientation == VERTICAL) {
+            measureVertical(widthMeasureSpec, heightMeasureSpec);
+        } else {
+            measureHorizontal(widthMeasureSpec, heightMeasureSpec);
+        }
+    }
+
+    private void measureHorizontal(int widthMeasureSpec, int heightMeasureSpec) {
+        int wSize = MeasureSpec.getSize(widthMeasureSpec) - (getPaddingLeft() + getPaddingRight());
+
+        //Scrollview case
+        if(MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.UNSPECIFIED)
+            wSize = Integer.MAX_VALUE;
+
+        int count = getChildCount();
+        int rowWidth = 0;
+        int totalHeight = 0;
+        int rowMaxHeight = 0;
+        int childWidth;
+        int maxRowHeight = getPaddingTop() + getPaddingBottom();
+
+        for (int i = 0; i < count; i++) {
+            final View child = getChildAt(i);
+            if (child.getVisibility() != GONE) {
+                measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
+                final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                childWidth = child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
+                //keep max height value stored
+                rowMaxHeight = Math.max(rowMaxHeight, child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);
+
+                //exceed max width start new row and update total height
+                if(childWidth + rowWidth > wSize) {
+                    totalHeight += rowMaxHeight;
+                    maxRowHeight = Math.max(maxRowHeight, rowWidth);
+                    rowWidth = childWidth;
+                    rowMaxHeight = 0;
+                } else {
+                    rowWidth += childWidth;
+                }
+            }
+        }
+        //plus last child height
+        if(rowWidth != 0) {
+            maxRowHeight = Math.max(maxRowHeight, rowWidth);
+            totalHeight += rowMaxHeight;
+        }
+
+        //set width to max value
+        if(MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.UNSPECIFIED)
+            wSize = maxRowHeight - (getPaddingLeft() + getPaddingRight());
+
+        setMeasuredDimension(resolveSize(wSize, widthMeasureSpec),
+                resolveSize(totalHeight + getPaddingTop() + getPaddingBottom(), heightMeasureSpec));
+    }
+
+    private void measureVertical(int widthMeasureSpec, int heightMeasureSpec) {
+        int hSize = MeasureSpec.getSize(heightMeasureSpec) - (getPaddingTop() + getPaddingBottom());
+
+        int count = getChildCount();
+        int columnHeight = 0;
+        int totalWidth = 0, maxColumnHeight = 0;
+        int columnMaxWidth = 0;
+        int childHeight;
+
+        //Scrollview case
+        if(MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.UNSPECIFIED)
+            hSize = Integer.MAX_VALUE;
+
+        for (int i = 0; i < count; i++) {
+            final View child = getChildAt(i);
+            if (child.getVisibility() != GONE) {
+                measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
+                final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                childHeight = child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
+                //keep max width value stored
+                columnMaxWidth = Math.max(columnMaxWidth, child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
+
+                //exceed max height start new column and update total width
+                if(childHeight + columnHeight > hSize) {
+                    totalWidth += columnMaxWidth;
+                    maxColumnHeight = Math.max(maxColumnHeight, columnHeight);
+                    columnHeight = childHeight;
+                    columnMaxWidth = 0;
+                } else {
+                    columnHeight += childHeight;
+                }
+            }
+        }
+        //plus last child width
+        if(columnHeight != 0) {
+            maxColumnHeight = Math.max(maxColumnHeight, columnHeight);
+            totalWidth += columnMaxWidth;
+        }
+
+        //set height to max value
+        if(MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.UNSPECIFIED)
+            hSize = maxColumnHeight - (getPaddingTop() + getPaddingBottom());
+
+        setMeasuredDimension(resolveSize(totalWidth + getPaddingRight() + getPaddingLeft(),
+                widthMeasureSpec), resolveSize(hSize, heightMeasureSpec));
+    }
+
+    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        mListPositions.clear();
         if(mOrientation == VERTICAL)
             layoutVertical(left, top, right, bottom);
         else
@@ -141,7 +244,7 @@ public class AutoLinearLayout extends FrameLayout {
         totalHorizontal += childLeft + maxChildWidth;
         //final update for horizontal gravities and layout views
         updateChildPositionHorizontal(width, totalHorizontal, column, 0);
-        mListPositions.clear();
+        //mListPositions.clear();
     }
 
     /**
@@ -204,7 +307,7 @@ public class AutoLinearLayout extends FrameLayout {
         updateChildPositionHorizontal(width, totalHorizontal, row, maxChildHeight);
         totalVertical += childTop + maxChildHeight;
         updateChildPositionVertical(height, totalVertical, row, 0);
-        mListPositions.clear();
+        //mListPositions.clear();
     }
 
     /**
@@ -374,6 +477,11 @@ public class AutoLinearLayout extends FrameLayout {
             this.left = l;
             this.top = t;
             this.position = r;
+        }
+
+        @Override
+        public String toString() {
+            return "left-"+left + " top"+top + " pos"+position;
         }
     }
 

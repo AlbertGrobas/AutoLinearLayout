@@ -17,7 +17,7 @@ limitations under the License.
 <resources>
     <declare-styleable name="AutoLinearLayout">
         <!-- Standard orientation constant. -->
-        <attr name="orientation">
+        <attr name="auto_orientation">
             <!-- Defines an horizontal widget. -->
             <enum name="horizontal" value="0" />
             <!-- Defines a vertical widget. -->
@@ -26,7 +26,7 @@ limitations under the License.
 
         <!-- Specifies how an object should position its content, on both the X and Y axes,
              within its own bounds.  -->
-        <attr name="gravity">
+        <attr name="auto_gravity">
             <!-- Push object to the top of its container, not changing its size. -->
             <flag name="top" value="0x30" />
             <!-- Push object to the bottom of its container, not changing its size. -->

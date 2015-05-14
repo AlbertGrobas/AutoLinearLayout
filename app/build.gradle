@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion '22.0.0'
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId "net.grobas.autolinearlayout.sample"
         minSdkVersion 8
         targetSdkVersion 22
-        versionCode 1
-        versionName "0.1"
+        versionCode 2
+        versionName "0.2"
     }
     buildTypes {
         release {
@@ -20,6 +20,6 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:22.+'
+    compile 'com.android.support:appcompat-v7:22.1.1'
     compile project(':autolinearlayout')
 }
