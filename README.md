@@ -1,6 +1,8 @@
 AutoLinearLayout
 ===============
 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AutoLinearLayout-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1852)
+
 Custom layout that arranges views in rows and columns automatically.
 Takes care about padding, margins, gravity and layout child gravities.
 

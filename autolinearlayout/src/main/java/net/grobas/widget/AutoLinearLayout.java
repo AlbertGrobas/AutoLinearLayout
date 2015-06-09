@@ -16,6 +16,7 @@
 
 package net.grobas.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.view.GravityCompat;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 public class AutoLinearLayout extends FrameLayout {
 
     private int mOrientation;
-    private int mGravity = Gravity.TOP | Gravity.LEFT;
+    private int mGravity = Gravity.TOP | GravityCompat.START;
 
     public final static int HORIZONTAL = 0;
     public final static int VERTICAL = 1;
@@ -42,21 +43,27 @@ public class AutoLinearLayout extends FrameLayout {
 
     public AutoLinearLayout(Context context) {
         super(context);
-        init(context, null, 0);
+        init(context, null, 0, 0);
     }
 
     public AutoLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs, 0);
+        init(context, attrs, 0, 0);
     }
 
-    public AutoLinearLayout(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        init(context, attrs, defStyle);
+    public AutoLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context, attrs, defStyleAttr, 0);
     }
 
-    private void init(Context context, AttributeSet attrs, int defStyle) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AutoLinearLayout, defStyle, 0);
+    @TargetApi(21)
+    public AutoLinearLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AutoLinearLayout, defStyleAttr, defStyleRes);
         try {
             mOrientation = a.getInt(R.styleable.AutoLinearLayout_auto_orientation, HORIZONTAL);
             int gravity = a.getInt(R.styleable.AutoLinearLayout_auto_gravity, -1);
@@ -372,7 +379,7 @@ public class AutoLinearLayout extends FrameLayout {
 
     private void updateLeftPositionByGravity(ViewPosition pos, int size, int gravity) {
         switch(gravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
-            case Gravity.RIGHT:
+            case GravityCompat.END:
                 pos.left += (size > 0) ? size : 0;
                 break;
 
@@ -473,10 +480,10 @@ public class AutoLinearLayout extends FrameLayout {
         int top;
         int position; //row or column
 
-        ViewPosition(int l, int t, int r) {
+        ViewPosition(int l, int t, int p) {
             this.left = l;
             this.top = t;
-            this.position = r;
+            this.position = p;
         }
 
         @Override
