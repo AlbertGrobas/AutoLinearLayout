@@ -96,6 +96,7 @@ public class AutoLinearLayout extends FrameLayout {
         int totalHeight = 0;
         int rowMaxHeight = 0;
         int childWidth;
+        int childHeight;
         int maxRowHeight = getPaddingTop() + getPaddingBottom();
 
         for (int i = 0; i < count; i++) {
@@ -104,15 +105,16 @@ public class AutoLinearLayout extends FrameLayout {
                 measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
                 final LayoutParams lp = (LayoutParams) child.getLayoutParams();
                 childWidth = child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
+                childHeight = child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
                 //keep max height value stored
-                rowMaxHeight = Math.max(rowMaxHeight, child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);
+                rowMaxHeight = Math.max(rowMaxHeight, childHeight);
 
                 //exceed max width start new row and update total height
                 if(childWidth + rowWidth > wSize) {
                     totalHeight += rowMaxHeight;
                     maxRowHeight = Math.max(maxRowHeight, rowWidth);
                     rowWidth = childWidth;
-                    rowMaxHeight = 0;
+                    rowMaxHeight = childHeight;
                 } else {
                     rowWidth += childWidth;
                 }
@@ -139,6 +141,7 @@ public class AutoLinearLayout extends FrameLayout {
         int columnHeight = 0;
         int totalWidth = 0, maxColumnHeight = 0;
         int columnMaxWidth = 0;
+        int childWidth;
         int childHeight;
 
         //Scrollview case
@@ -150,16 +153,17 @@ public class AutoLinearLayout extends FrameLayout {
             if (child.getVisibility() != GONE) {
                 measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
                 final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                childWidth = child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
                 childHeight = child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
                 //keep max width value stored
-                columnMaxWidth = Math.max(columnMaxWidth, child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
+                columnMaxWidth = Math.max(columnMaxWidth, childWidth);
 
                 //exceed max height start new column and update total width
                 if(childHeight + columnHeight > hSize) {
                     totalWidth += columnMaxWidth;
                     maxColumnHeight = Math.max(maxColumnHeight, columnHeight);
                     columnHeight = childHeight;
-                    columnMaxWidth = 0;
+                    columnMaxWidth = childWidth;
                 } else {
                     columnHeight += childHeight;
                 }
