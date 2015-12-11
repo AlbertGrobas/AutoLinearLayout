@@ -120,7 +120,7 @@ public class AutoLinearLayout extends FrameLayout {
                 }
             }
         }
-        //plus last child height
+        //plus last child height and width
         if(rowWidth != 0) {
             maxRowWidth = Math.max(maxRowWidth, rowWidth);
             totalHeight += rowMaxHeight;
