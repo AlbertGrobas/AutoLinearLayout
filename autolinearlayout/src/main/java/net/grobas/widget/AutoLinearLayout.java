@@ -120,7 +120,7 @@ public class AutoLinearLayout extends FrameLayout {
                 }
             }
         }
-        //plus last child height
+        //plus last child height and width
         if(rowWidth != 0) {
             maxRowWidth = Math.max(maxRowWidth, rowWidth);
             totalHeight += rowMaxHeight;
@@ -272,8 +272,8 @@ public class AutoLinearLayout extends FrameLayout {
         if(count == 0)
             return;
 
-        final int width = right - getPaddingLeft() - left - getPaddingRight();
-        final int height = bottom - getPaddingTop() - top - getPaddingBottom();
+        final int pWidth = right - getPaddingLeft() - left - getPaddingRight();
+        final int pHeight = bottom - getPaddingTop() - top - getPaddingBottom();
 
         int childTop = getPaddingTop();
         int childLeft = getPaddingLeft();
@@ -287,15 +287,15 @@ public class AutoLinearLayout extends FrameLayout {
 
             if (child != null && child.getVisibility() != View.GONE) {
                 if (child.getMeasuredHeight() == 0 || child.getMeasuredWidth() == 0)
-                    child.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST),
-                            MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST));
+                    child.measure(MeasureSpec.makeMeasureSpec(pWidth, MeasureSpec.AT_MOST),
+                            MeasureSpec.makeMeasureSpec(pHeight, MeasureSpec.AT_MOST));
 
                 LayoutParams lp = (LayoutParams) child.getLayoutParams();
                 final int childWidth = child.getMeasuredWidth();
                 final int childHeight = child.getMeasuredHeight();
 
-                if (childLeft + childWidth + lp.leftMargin + lp.rightMargin > width + getPaddingLeft()) {
-                    updateChildPositionHorizontal(width, totalHorizontal, row, maxChildHeight);
+                if (childLeft + childWidth + lp.leftMargin + lp.rightMargin > pWidth + getPaddingLeft()) {
+                    updateChildPositionHorizontal(pWidth, totalHorizontal, row, maxChildHeight);
                     childLeft = getPaddingLeft();
                     childTop += maxChildHeight;
                     maxChildHeight = 0;
@@ -315,9 +315,9 @@ public class AutoLinearLayout extends FrameLayout {
             }
         }
 
-        updateChildPositionHorizontal(width, totalHorizontal, row, maxChildHeight);
+        updateChildPositionHorizontal(pWidth, totalHorizontal, row, maxChildHeight);
         totalVertical += childTop + maxChildHeight;
-        updateChildPositionVertical(height, totalVertical, row, 0);
+        updateChildPositionVertical(pHeight, totalVertical, row, 0);
         //mListPositions.clear();
     }
 
