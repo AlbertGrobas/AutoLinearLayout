@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        local:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         local:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <TextView
@@ -158,8 +158,6 @@
 
         </net.grobas.widget.AutoLinearLayout>
     </ScrollView>
-
-
 </RelativeLayout>
 
 
