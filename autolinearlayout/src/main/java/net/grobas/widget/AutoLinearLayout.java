@@ -97,7 +97,7 @@ public class AutoLinearLayout extends FrameLayout {
         int rowMaxHeight = 0;
         int childWidth;
         int childHeight;
-        int maxRowHeight = getPaddingTop() + getPaddingBottom();
+        int maxRowWidth = getPaddingLeft() + getPaddingRight();
 
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
@@ -112,7 +112,7 @@ public class AutoLinearLayout extends FrameLayout {
                 //exceed max width start new row and update total height
                 if(childWidth + rowWidth > wSize) {
                     totalHeight += rowMaxHeight;
-                    maxRowHeight = Math.max(maxRowHeight, rowWidth);
+                    maxRowWidth = Math.max(maxRowWidth, rowWidth);
                     rowWidth = childWidth;
                     rowMaxHeight = childHeight;
                 } else {
@@ -120,15 +120,15 @@ public class AutoLinearLayout extends FrameLayout {
                 }
             }
         }
-        //plus last child height
+        //plus last child height and width
         if(rowWidth != 0) {
-            maxRowHeight = Math.max(maxRowHeight, rowWidth);
+            maxRowWidth = Math.max(maxRowWidth, rowWidth);
             totalHeight += rowMaxHeight;
         }
 
         //set width to max value
         if(MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.UNSPECIFIED)
-            wSize = maxRowHeight - (getPaddingLeft() + getPaddingRight());
+            wSize = maxRowWidth + (getPaddingLeft() + getPaddingRight());
 
         setMeasuredDimension(resolveSize(wSize, widthMeasureSpec),
                 resolveSize(totalHeight + getPaddingTop() + getPaddingBottom(), heightMeasureSpec));
@@ -177,7 +177,7 @@ public class AutoLinearLayout extends FrameLayout {
 
         //set height to max value
         if(MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.UNSPECIFIED)
-            hSize = maxColumnHeight - (getPaddingTop() + getPaddingBottom());
+            hSize = maxColumnHeight + (getPaddingTop() + getPaddingBottom());
 
         setMeasuredDimension(resolveSize(totalWidth + getPaddingRight() + getPaddingLeft(),
                 widthMeasureSpec), resolveSize(hSize, heightMeasureSpec));
@@ -325,19 +325,19 @@ public class AutoLinearLayout extends FrameLayout {
      * Updates children positions. Takes cares about gravity and layout gravity.
      * Finally layout children to parent if needed.
      *
-     * @param height parent height
+     * @param parentHeight parent parentHeight
      * @param totalSize total vertical size used by children in a column
      * @param column column number
      * @param maxChildWidth the biggest child width
      */
-    private void updateChildPositionVertical(int height, int totalSize, int column, int maxChildWidth) {
+    private void updateChildPositionVertical(int parentHeight, int totalSize, int column, int maxChildWidth) {
         for(int i = 0; i < mListPositions.size(); i++) {
             ViewPosition pos = mListPositions.get(i);
             final View child = getChildAt(i);
             //(android:gravity)
             //update children position inside parent layout
             if(mOrientation == HORIZONTAL || pos.position == column) {
-                updateTopPositionByGravity(pos, height - totalSize, mGravity);
+                updateTopPositionByGravity(pos, parentHeight - totalSize, mGravity);
             }
             //(android:layout_gravity)
             //update children position inside their space
@@ -356,18 +356,18 @@ public class AutoLinearLayout extends FrameLayout {
      * Updates children positions. Takes cares about gravity and layout gravity.
      * Finally layout children to parent if needed. Analog to vertical.
      *
-     * @param width parent width
+     * @param parentWidth parent parentWidth
      * @param totalSize total horizontal size used by children in a row
      * @param row row number
      * @param maxChildHeight the biggest child height
      */
-    private void updateChildPositionHorizontal(int width, int totalSize, int row, int maxChildHeight) {
+    private void updateChildPositionHorizontal(int parentWidth, int totalSize, int row, int maxChildHeight) {
         for(int i = 0; i < mListPositions.size(); i++) {
             ViewPosition pos = mListPositions.get(i);
             final View child = getChildAt(i);
 
             if(mOrientation == VERTICAL || pos.position == row) {
-                updateLeftPositionByGravity(pos, width - totalSize, mGravity);
+                updateLeftPositionByGravity(pos, parentWidth - totalSize, mGravity);
             }
 
             if(mOrientation == HORIZONTAL && pos.position == row) {
