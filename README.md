@@ -16,7 +16,7 @@ Usage
 
 To use AutoLinearLayout, add the module into your project and start to build xml or java.
 
-###XML
+### XML
 ```xml
     <net.grobas.widget.AutoLinearLayout 
         android:layout_width="match_parent"
@@ -27,13 +27,13 @@ To use AutoLinearLayout, add the module into your project and start to build xml
     </net.grobas.widget.AutoLinearLayout>
 ```
 
-#####Properties:
+##### Properties:
 
 * `app:auto_orientation` (int)    -> default horizontal
 * `app:auto_gravity`  (flag)      -> default top | left
 
 
-###JAVA
+### JAVA
 
 ```java
     AutoLinearLayout l2 = new AutoLinearLayout(this);
@@ -43,7 +43,7 @@ To use AutoLinearLayout, add the module into your project and start to build xml
     parent.addView(l2);
 ```
 
-##TODO
+## TODO
 
 * Rtl
 * Dividers?
